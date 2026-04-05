@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-#include "renderer.h"
+#include "camera.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -13,7 +13,7 @@ int main() {
     objects->add(std::make_shared<sphere>(point3(0, 0, -1), 0.3));
     objects->add(std::make_shared<sphere>(point3(-20, 0, -20), 10));
 
-    rendering r(WIDTH, HEIGHT, FOCAL_LENGTH, objects);
+    camera cam(WIDTH, HEIGHT, FOCAL_LENGTH, objects);
 
     std::cout << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 
@@ -21,7 +21,7 @@ int main() {
         std::clog << "\rScanlines: " << j << '/' << WIDTH - 1 << std::flush;
 
         for (int i = 0; i < WIDTH; i++) {
-            write_color(std::cout, r.pixel_at(i, j));
+            write_color(std::cout, cam.pixel_at(i, j));
         }
     }
 

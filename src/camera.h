@@ -1,5 +1,5 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#ifndef CAMERA_H
+#define CAMERA_H
 
 #include <memory>
 
@@ -7,7 +7,7 @@
 #include "ray.h"
 #include "color.h"
 
-class rendering {
+class camera {
     private:
     int width, height;
     double focal_length;
@@ -25,7 +25,7 @@ class rendering {
     std::shared_ptr<screen_object> object; 
 
     public:
-    rendering(int width, int height, double focal_length, std::shared_ptr<screen_object> object);
+    camera(int width, int height, double focal_length, std::shared_ptr<screen_object> object);
     
     void set_object(std::shared_ptr<screen_object> object);
     color pixel_at(int x, int y) const;

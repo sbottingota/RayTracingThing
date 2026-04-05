@@ -1,4 +1,4 @@
-#include "renderer.h"
+#include "camera.h"
 
 #include <cmath>
 
@@ -6,7 +6,7 @@
 
 constexpr double inf = std::numeric_limits<double>::infinity();
 
-rendering::rendering(int width, int height, double focal_length, std::shared_ptr<screen_object> object)
+camera::camera(int width, int height, double focal_length, std::shared_ptr<screen_object> object)
     : width(width), height(height), focal_length(focal_length), object(object) {
 
     viewport_height = 2.0;
@@ -22,7 +22,7 @@ rendering::rendering(int width, int height, double focal_length, std::shared_ptr
     pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 }
 
-void rendering::set_object(std::shared_ptr<screen_object> object) {
+void camera::set_object(std::shared_ptr<screen_object> object) {
     this->object = object;
 }
 
@@ -43,20 +43,19 @@ double hit_sphere(const point3& center, double radius, const ray& r) {
 }
 */
 
-color rendering::ray_color(const ray& r) const {
+color camera::ray_color(const ray& r) const {
     hit_record record;
     if (object->hits(r, interval(0, inf), record)) {
-        vec3 N = (r.at(record.t) - vec3(0, 0, -1)).unit_vector();
-        return 0.5*color(N[0]+1, N[1]+1, N[2]+1);
+        return 0.5 * (record.normal + color(1, 1, 1));
     }
 
     // create a gradient
     vec3 unit_direction = r.direction().unit_vector();
     double a =  0.5 * (unit_direction[1] + 1.0);
-    return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
+    return (1.0-a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
 }
 
-color rendering::pixel_at(int x, int y) const {
+color camera::pixel_at(int x, int y) const {
     point3 pixel_center = pixel00_loc + x*pixel_delta_u + y*pixel_delta_v;
     vec3 ray_direction = pixel_center - camera_center;
     ray r(camera_center, ray_direction);
