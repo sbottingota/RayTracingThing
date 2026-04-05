@@ -1,5 +1,5 @@
-# executable 
-main
+# object files and executables
+build/*
 
 # image files
 *.ppm
