@@ -2,7 +2,11 @@
 
 #include <cmath>
 
-rendering::rendering(int width, int height, double focal_length) : width(width), height(height), focal_length(focal_length) {
+constexpr double inf = std::numeric_limits<double>::infinity();
+
+rendering::rendering(int width, int height, double focal_length, std::shared_ptr<screen_object> object)
+    : width(width), height(height), focal_length(focal_length), object(object) {
+
     viewport_height = 2.0;
     viewport_width = width * viewport_height / height;
 
@@ -16,10 +20,11 @@ rendering::rendering(int width, int height, double focal_length) : width(width),
     pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 }
 
-void rendering::add_object(std::unique_ptr<screen_object> object) {
-    objects.push_back(std::move(object));
+void rendering::set_object(std::shared_ptr<screen_object> object) {
+    this->object = object;
 }
 
+/*
 // temporary solution; TODO: encapsulate this into a sphere class
 double hit_sphere(const point3& center, double radius, const ray& r) {
     vec3 oc = center - r.origin();
@@ -34,11 +39,12 @@ double hit_sphere(const point3& center, double radius, const ray& r) {
         return (-b - std::sqrt(discriminant) ) / (2.0*a);
     }
 }
+*/
 
 color rendering::ray_color(const ray& r) const {
-    double t = hit_sphere(point3(0, 0, -1), 0.5, r);
-    if (t > 0.0) {
-        vec3 N = (r.at(t) - vec3(0, 0, -1)).unit_vector();
+    hit_record record;
+    if (object->hits(r, 0, inf, record)) {
+        vec3 N = (r.at(record.t) - vec3(0, 0, -1)).unit_vector();
         return 0.5*color(N[0]+1, N[1]+1, N[2]+1);
     }
 

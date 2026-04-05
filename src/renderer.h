@@ -1,7 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <vector>
 #include <memory>
 
 #include "geometry.h"
@@ -23,12 +22,12 @@ class rendering {
     point3 viewport_upper_left;
     point3 pixel00_loc;
 
-    std::vector<std::unique_ptr<screen_object>> objects; 
+    std::shared_ptr<screen_object> object; 
 
     public:
-    rendering(int width, int height, double focal_length);
-
-    void add_object(std::unique_ptr<screen_object> object);
+    rendering(int width, int height, double focal_length, std::shared_ptr<screen_object> object);
+    
+    void set_object(std::shared_ptr<screen_object> object);
     color pixel_at(int x, int y) const;
 
     private:

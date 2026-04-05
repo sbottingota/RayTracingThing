@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "renderer.h"
 
@@ -8,7 +9,11 @@
 #define FOCAL_LENGTH 1.0
 
 int main() {
-    rendering r(WIDTH, HEIGHT, FOCAL_LENGTH);
+    auto objects = std::make_shared<object_group>();
+    objects->add(std::make_shared<sphere>(point3(0, 0, -1), 0.3));
+    objects->add(std::make_shared<sphere>(point3(-20, 0, -20), 10));
+
+    rendering r(WIDTH, HEIGHT, FOCAL_LENGTH, objects);
 
     std::cout << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 
