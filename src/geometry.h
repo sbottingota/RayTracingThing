@@ -6,6 +6,8 @@
 #include <vector>
 #include <memory>
 
+#include "interval.h"
+
 class hit_record {
   public:
     point3 p;
@@ -24,7 +26,7 @@ class hit_record {
 class screen_object {
     public:
     virtual ~screen_object() = default;
-    virtual bool hits(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const = 0;
+    virtual bool hits(const ray& r, interval ray_t, hit_record& rec) const = 0;
 };
 
 
@@ -34,7 +36,7 @@ class object_group : public screen_object {
     public:
     object_group() {}
     void add(std::shared_ptr<screen_object> object);
-    virtual bool hits(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override;
+    virtual bool hits(const ray& r, interval ray_t, hit_record& record) const override;
 };
 
 class sphere : public screen_object {
@@ -43,7 +45,7 @@ class sphere : public screen_object {
 
     public:
     sphere(const point3& center, double radius) : center(center), radius(std::max(0.0, radius)) {}
-    virtual bool hits(const ray& r, double ray_tmin, double ray_tmax, hit_record& record) const override;
+    virtual bool hits(const ray& r, interval ray_t, hit_record& record) const override;
 };
 
 #endif

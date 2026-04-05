@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-bool sphere::hits(const ray& r, double ray_tmin, double ray_tmax, hit_record& record) const {
+bool sphere::hits(const ray& r, interval ray_t, hit_record& record) const {
     vec3 oc = center - r.origin();
     auto a = r.direction().length_squared();
     auto h = r.direction().dot(oc);
@@ -17,10 +17,11 @@ bool sphere::hits(const ray& r, double ray_tmin, double ray_tmax, hit_record& re
 
     // find the nearest root that lies in the acceptable range
     auto root = (h - sqrt_d) / a;
-    if (root <= ray_tmin || ray_tmax <= root) {
+    if (!ray_t.surrounds(root)) {
         root = (h + sqrt_d) / a;
-        if (root <= ray_tmin || ray_tmax <= root)
+        if (!ray_t.surrounds(root)) {
             return false;
+        }
     }
 
     record.t = root;

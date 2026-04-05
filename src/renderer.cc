@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "interval.h"
+
 constexpr double inf = std::numeric_limits<double>::infinity();
 
 rendering::rendering(int width, int height, double focal_length, std::shared_ptr<screen_object> object)
@@ -43,7 +45,7 @@ double hit_sphere(const point3& center, double radius, const ray& r) {
 
 color rendering::ray_color(const ray& r) const {
     hit_record record;
-    if (object->hits(r, 0, inf, record)) {
+    if (object->hits(r, interval(0, inf), record)) {
         vec3 N = (r.at(record.t) - vec3(0, 0, -1)).unit_vector();
         return 0.5*color(N[0]+1, N[1]+1, N[2]+1);
     }
