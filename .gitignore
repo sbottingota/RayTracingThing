@@ -1,0 +1,7 @@
+# executable 
+main
+
+# image files
+*.ppm
+*.png
+*.jpg
