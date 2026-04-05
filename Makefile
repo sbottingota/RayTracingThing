@@ -1,23 +1,21 @@
 .PHONY: all image jpg clean
 
-CXXFLAGS=-Wall -Wextra
+CXXFLAGS=-Wall -Wextra -Wpedantic
 FFMPEG_FLAGS=-hide_banner -loglevel error
 
+SRCS=$(wildcard src/*.cc)
+OBJS=$(SRCS:src/%.cc=build/%.o)
+DEPS=$(OBJS:.o=.d)
 EXE=build/render
-OBJS=build/main.o build/vec3.o build/color.o build/ray.o
 
 all: $(EXE)
 
 $(EXE): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(EXE)
 
-build/main.o: src/main.cc
+build/%.o: src/%.cc
 	@mkdir -p build
-	$(CXX) $(CXXFLAGS) -c src/main.cc -o build/main.o
-
-build/%.o: src/%.h src/%.cc
-	@mkdir -p build
-	$(CXX) $(CXXFLAGS) -c src/$*.cc -o build/$*.o
+	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 
 image: all
 	$(EXE) > img.ppm
@@ -27,4 +25,6 @@ jpg: image
 
 clean:
 	@rm -f build/* *.ppm *.png *.jpg
+
+-include $(DEPS)
 

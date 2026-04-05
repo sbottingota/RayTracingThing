@@ -72,7 +72,11 @@ vec3 vec3::unit_vector() const {
 }
 
 double vec3::length() const {
-    return std::sqrt(e[0]*e[0] + e[1]*e[1] + e[2]*e[2]);
+    return std::sqrt(length_squared());
+}
+
+double vec3::length_squared() const {
+    return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
 }
 
 

@@ -30,6 +30,7 @@ class vec3 {
     vec3 unit_vector() const;
 
     double length() const;
+    double length_squared() const;
 };
 
 using point3 = vec3; // alias for geometric clarity

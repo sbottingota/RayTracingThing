@@ -1,4 +1,4 @@
-# object files and executables
+# build files
 build/*
 
 # image files
