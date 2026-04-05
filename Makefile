@@ -1,10 +1,10 @@
 .PHONY: all image jpg clean
 
-CXXFLAGS=-Wall -Werror
+CXXFLAGS=-Wall -Wextra
 FFMPEG_FLAGS=-hide_banner -loglevel error
 
 EXE=build/render
-OBJS=build/main.o build/vec3.o build/color.o
+OBJS=build/main.o build/vec3.o build/color.o build/ray.o
 
 all: $(EXE)
 
