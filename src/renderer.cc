@@ -1,8 +1,10 @@
 #include "renderer.h"
 
+#include <cmath>
+
 rendering::rendering(int width, int height, double focal_length) : width(width), height(height), focal_length(focal_length) {
     viewport_height = 2.0;
-    viewport_width = (width / height) * viewport_height;
+    viewport_width = width * viewport_height / height;
 
     viewport_u = vec3(viewport_width, 0, 0);
     viewport_v = vec3(0, -viewport_height, 0);
@@ -18,7 +20,28 @@ void rendering::add_object(std::unique_ptr<screen_object> object) {
     objects.push_back(std::move(object));
 }
 
+// temporary solution; TODO: encapsulate this into a sphere class
+double hit_sphere(const point3& center, double radius, const ray& r) {
+    vec3 oc = center - r.origin();
+    auto a = r.direction().dot(r.direction());
+    auto b = -2.0 * r.direction().dot(oc);
+    auto c = oc.dot(oc) - radius*radius;
+    auto discriminant = b*b - 4*a*c;
+
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-b - std::sqrt(discriminant) ) / (2.0*a);
+    }
+}
+
 color rendering::ray_color(const ray& r) const {
+    double t = hit_sphere(point3(0, 0, -1), 0.5, r);
+    if (t > 0.0) {
+        vec3 N = (r.at(t) - vec3(0, 0, -1)).unit_vector();
+        return 0.5*color(N[0]+1, N[1]+1, N[2]+1);
+    }
+
     // create a gradient
     vec3 unit_direction = r.direction().unit_vector();
     double a =  0.5 * (unit_direction[1] + 1.0);

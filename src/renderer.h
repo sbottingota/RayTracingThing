@@ -13,7 +13,7 @@ class rendering {
     int width, height;
     double focal_length;
 
-    int viewport_width, viewport_height;
+    double viewport_width, viewport_height;
 
     point3 camera_center = point3(0, 0, 0);
 

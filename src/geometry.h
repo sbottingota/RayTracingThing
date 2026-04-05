@@ -13,7 +13,7 @@ class hit_record {
 class screen_object {
     public:
     virtual ~screen_object() = default;
-    virtual bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const = 0;
+    virtual bool hits(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const = 0;
 };
 
 
@@ -23,7 +23,7 @@ class sphere : public screen_object {
 
     public:
     sphere(const point3& center, double radius) : center(center), radius(std::max(0.0, radius)) {}
-    virtual bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override;
+    virtual bool hits(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override;
 };
 
 #endif

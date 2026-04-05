@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-bool sphere::hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& record) const {
+bool sphere::hits(const ray& r, double ray_tmin, double ray_tmax, hit_record& record) const {
     vec3 oc = center - r.origin();
 
     double a = r.direction().length_squared();
