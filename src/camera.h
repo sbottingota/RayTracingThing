@@ -12,6 +12,8 @@ class camera {
     int width, height;
     double focal_length;
 
+    int samples_per_pixel = 10;
+
     double viewport_width, viewport_height;
 
     point3 camera_center = point3(0, 0, 0);
@@ -29,6 +31,7 @@ class camera {
     
     void set_object(std::shared_ptr<screen_object> object);
     color pixel_at(int x, int y) const;
+    color sampled_pixel_at(int x, int y) const;
 
     private:
     color ray_color(const ray& r) const;

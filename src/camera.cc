@@ -1,6 +1,7 @@
 #include "camera.h"
 
 #include <cmath>
+#include <cstdlib>
 
 #include "interval.h"
 
@@ -26,23 +27,6 @@ void camera::set_object(std::shared_ptr<screen_object> object) {
     this->object = object;
 }
 
-/*
-// temporary solution; TODO: encapsulate this into a sphere class
-double hit_sphere(const point3& center, double radius, const ray& r) {
-    vec3 oc = center - r.origin();
-    auto a = r.direction().dot(r.direction());
-    auto b = -2.0 * r.direction().dot(oc);
-    auto c = oc.dot(oc) - radius*radius;
-    auto discriminant = b*b - 4*a*c;
-
-    if (discriminant < 0) {
-        return -1.0;
-    } else {
-        return (-b - std::sqrt(discriminant) ) / (2.0*a);
-    }
-}
-*/
-
 color camera::ray_color(const ray& r) const {
     hit_record record;
     if (object->hits(r, interval(0, inf), record)) {
@@ -61,5 +45,21 @@ color camera::pixel_at(int x, int y) const {
     ray r(camera_center, ray_direction);
 
     return ray_color(r);
+}
+
+// random number beween -0.5 and 0.5
+double random_pixel_offset() {
+    return std::rand() / (RAND_MAX + 1.0) - 0.5;
+}
+
+color camera::sampled_pixel_at(int x, int y) const {
+    color pixel_color(0, 0, 0);
+
+    for (int i = 0; i < samples_per_pixel; ++i) {
+        pixel_color += pixel_at(x + random_pixel_offset(), y + random_pixel_offset());
+    }
+
+    pixel_color /= samples_per_pixel;
+    return pixel_color;
 }
 
