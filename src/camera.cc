@@ -34,8 +34,8 @@ color camera::ray_color(const ray& r, int depth) const {
 
     hit_record record;
     if (object->hits(r, interval(0.01, inf), record)) {
-        vec3 direction = vec3::random_on_hemisphere(record.normal);
-        return 0.5 * ray_color(ray(record.p, direction), depth - 1);
+        vec3 direction = record.normal + vec3::random_unit();
+        return gamma * ray_color(ray(record.p, direction), depth - 1);
     }
 
     // create a gradient

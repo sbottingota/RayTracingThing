@@ -35,7 +35,6 @@ class vec3 {
     static vec3 random();
     static vec3 random(double min, double max);
     static vec3 random_unit();
-    static vec3 random_on_hemisphere(const vec3& normal);
 };
 
 using point3 = vec3; // alias for geometric clarity

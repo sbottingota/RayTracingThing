@@ -14,6 +14,7 @@ class camera {
 
     int samples_per_pixel = 10;
     int max_depth = 10;
+    double gamma = 0.5;
 
     double viewport_width, viewport_height;
 

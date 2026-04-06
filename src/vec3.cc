@@ -110,14 +110,3 @@ vec3 vec3::random_unit() {
     }
 }
 
-vec3 vec3::random_on_hemisphere(const vec3& normal) {
-    vec3 on_unit_sphere = vec3::random_unit();
-
-    // check if vector is in the same hemisphere as normal
-    if (on_unit_sphere.dot(normal) > 0.0)  {
-        return on_unit_sphere;
-    } else {
-        return -on_unit_sphere;
-    }
-}
-
