@@ -1,0 +1,25 @@
+# camera config (currently ignored)
+position 0.0 0.0 0.0
+facing 0.0 0.0 1.0
+
+vup 0 1 0
+
+# shape configs
+
+# ground
+sphere:
+    position 0 -100.5 -1.0
+    size 100
+
+# othershapes
+sphere:
+    position -1 0 -1
+    size .5
+
+sphere:
+    position 1 0 -1
+    size .5
+
+sphere:
+    position 0 0 -1.2
+    size 0.5

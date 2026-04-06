@@ -3,6 +3,7 @@
 
 #include "camera.h"
 #include "material.h"
+#include "parsing.h"
 
 #define WIDTH 640
 #define HEIGHT 360
@@ -15,10 +16,12 @@ int main() {
     auto material_left   = std::make_shared<dielectric>(1.50);
     auto material_right  = std::make_shared<metal>(color(0.8, 0.6, 0.2), 0.1);
 
+    /*
     objects->add(std::make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
     objects->add(std::make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.5, material_left));
     objects->add(std::make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
     objects->add(std::make_shared<sphere>(point3(0.0, 0.0, -1.2), 0.5, material_center));
+    */
 
     camera_params params(WIDTH, HEIGHT);
     /*
@@ -27,6 +30,8 @@ int main() {
     */
 
     camera cam(params, objects);
+
+    parse_file("shapes.txt", cam, *objects);
 
     std::cout << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 
