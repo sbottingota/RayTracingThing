@@ -21,7 +21,11 @@ int main() {
     objects->add(std::make_shared<sphere>(point3(0.0, 0.0, -1.2), 0.5, material_center));
 
     camera_params params(WIDTH, HEIGHT);
-    // params.set_size(WIDTH, HEIGHT);
+    /*
+    params.set_focus(point3(-2, 2, 1), point3(0, 0, -1), vec3(0, 1, 0));
+    params.vfov = 20;
+    */
+
     camera cam(params, objects);
 
     std::cout << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";

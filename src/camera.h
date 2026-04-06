@@ -11,6 +11,8 @@ class camera_params {
     int width, height;
     double viewport_width, viewport_height;
 
+    vec3 u, v, w; // camera frame basis vectors
+
     public:
     double focal_length;
 
@@ -19,9 +21,10 @@ class camera_params {
 
     double vfov; // vertical view angle
 
-    point3 camera_center;
+    point3 center;
 
     camera_params(int width, int height);
+    void set_focus(point3 lookfrom, point3 lookat, vec3 vup);
     void set_size(int width, int height);
 
     private:

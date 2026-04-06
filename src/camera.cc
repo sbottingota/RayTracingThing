@@ -3,6 +3,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
 
 #include "util.h"
 #include "material.h"
@@ -10,19 +11,26 @@
 constexpr double inf = std::numeric_limits<double>::infinity();
 
 camera_params::camera_params(int width, int height) {
-    focal_length = 1.0;
     samples_per_pixel = 10;
     max_depth = 10;
     vfov = 90;
-    camera_center = point3(0, 0, 0);
 
+    set_focus(point3(0, 0, 0), point3(0, 0, -1), vec3(0, 1, 0));
     set_size(width, height);
+}
+
+void camera_params::set_focus(point3 lookfrom, point3 lookat, vec3 vup) {
+    center = lookfrom;
+    focal_length = (lookfrom - lookat).length();
+
+    w = (lookfrom - lookat).unit_vector();
+    u = vup.cross(w).unit_vector();
+    v = w.cross(u);
 }
 
 void camera_params::set_size(int width, int height) {
     this->width = width;
     this->height = height;
-    set_viewport_size();
 }
 
 // set viewport aspect ratio to width:height
@@ -35,13 +43,15 @@ void camera_params::set_viewport_size() {
 }
 
 camera::camera(camera_params params, std::shared_ptr<screen_object> object) : params(params), object(object) {
-    viewport_u = vec3(params.viewport_width, 0, 0);
-    viewport_v = vec3(0, -params.viewport_height, 0);
+    params.set_viewport_size();
+
+    viewport_u = params.viewport_width * params.u;
+    viewport_v = params.viewport_height * -params.v;
 
     pixel_delta_u = viewport_u / params.width;
     pixel_delta_v = viewport_v / params.height;
 
-    viewport_upper_left = params.camera_center - vec3(0, 0, params.focal_length) - viewport_u / 2 - viewport_v / 2;
+    viewport_upper_left = params.center - params.focal_length * params.w - viewport_u / 2 - viewport_v / 2;
     pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 }
 
@@ -74,8 +84,8 @@ color camera::ray_color(const ray& r, int depth) const {
 
 color camera::pixel_at(int x, int y) const {
     point3 pixel_center = pixel00_loc + x*pixel_delta_u + y*pixel_delta_v;
-    vec3 ray_direction = pixel_center - params.camera_center;
-    ray r(params.camera_center, ray_direction);
+    vec3 ray_direction = pixel_center - params.center;
+    ray r(params.center, ray_direction);
 
     return ray_color(r, params.max_depth);
 }
