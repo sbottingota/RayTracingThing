@@ -7,18 +7,32 @@
 #include "ray.h"
 #include "color.h"
 
-class camera {
-    private:
+class camera_params {
     int width, height;
-    double focal_length;
-
-    int samples_per_pixel = 10;
-    int max_depth = 10;
-    double gamma = 0.5;
-
     double viewport_width, viewport_height;
 
-    point3 camera_center = point3(0, 0, 0);
+    public:
+    double focal_length;
+
+    int samples_per_pixel;
+    int max_depth;
+
+    double vfov; // vertical view angle
+
+    point3 camera_center;
+
+    camera_params(int width, int height);
+    void set_size(int width, int height);
+
+    private:
+    void set_viewport_size(); // set viewport size, ensuring that width:height = viewport width:viewport height
+
+    friend class camera;
+};
+
+class camera {
+    private:
+    camera_params params;
 
     vec3 viewport_u, viewport_v;
     vec3 pixel_delta_u, pixel_delta_v;
@@ -29,7 +43,7 @@ class camera {
     std::shared_ptr<screen_object> object; 
 
     public:
-    camera(int width, int height, double focal_length, std::shared_ptr<screen_object> object);
+    camera(camera_params params, std::shared_ptr<screen_object> object);
     
     void set_object(std::shared_ptr<screen_object> object);
     color pixel_at(int x, int y) const;

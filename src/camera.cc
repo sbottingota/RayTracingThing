@@ -1,5 +1,6 @@
 #include "camera.h"
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdlib>
 
@@ -8,19 +9,39 @@
 
 constexpr double inf = std::numeric_limits<double>::infinity();
 
-camera::camera(int width, int height, double focal_length, std::shared_ptr<screen_object> object)
-    : width(width), height(height), focal_length(focal_length), object(object) {
+camera_params::camera_params(int width, int height) {
+    focal_length = 1.0;
+    samples_per_pixel = 10;
+    max_depth = 10;
+    vfov = 90;
+    camera_center = point3(0, 0, 0);
 
-    viewport_height = 2.0;
+    set_size(width, height);
+}
+
+void camera_params::set_size(int width, int height) {
+    this->width = width;
+    this->height = height;
+    set_viewport_size();
+}
+
+// set viewport aspect ratio to width:height
+void camera_params::set_viewport_size() {
+    double theta = vfov * (M_PI / 180);
+    double h = std::tan(theta / 2);
+
+    viewport_height = 2 * h * focal_length;
     viewport_width = width * viewport_height / height;
+}
 
-    viewport_u = vec3(viewport_width, 0, 0);
-    viewport_v = vec3(0, -viewport_height, 0);
+camera::camera(camera_params params, std::shared_ptr<screen_object> object) : params(params), object(object) {
+    viewport_u = vec3(params.viewport_width, 0, 0);
+    viewport_v = vec3(0, -params.viewport_height, 0);
 
-    pixel_delta_u = viewport_u / width;
-    pixel_delta_v = viewport_v / height;
+    pixel_delta_u = viewport_u / params.width;
+    pixel_delta_v = viewport_v / params.height;
 
-    viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
+    viewport_upper_left = params.camera_center - vec3(0, 0, params.focal_length) - viewport_u / 2 - viewport_v / 2;
     pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 }
 
@@ -53,20 +74,20 @@ color camera::ray_color(const ray& r, int depth) const {
 
 color camera::pixel_at(int x, int y) const {
     point3 pixel_center = pixel00_loc + x*pixel_delta_u + y*pixel_delta_v;
-    vec3 ray_direction = pixel_center - camera_center;
-    ray r(camera_center, ray_direction);
+    vec3 ray_direction = pixel_center - params.camera_center;
+    ray r(params.camera_center, ray_direction);
 
-    return ray_color(r, max_depth);
+    return ray_color(r, params.max_depth);
 }
 
 color camera::sampled_pixel_at(int x, int y) const {
     color pixel_color(0, 0, 0);
 
-    for (int i = 0; i < samples_per_pixel; ++i) {
+    for (int i = 0; i < params.samples_per_pixel; ++i) {
         pixel_color += pixel_at(x + random_double()-0.5, y + random_double()-0.5);
     }
 
-    pixel_color /= samples_per_pixel;
+    pixel_color /= params.samples_per_pixel;
     return pixel_color;
 }
 

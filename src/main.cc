@@ -7,8 +7,6 @@
 #define WIDTH 640
 #define HEIGHT 360
 
-#define FOCAL_LENGTH 1.0
-
 int main() {
     auto objects = std::make_shared<object_group>();
 
@@ -22,7 +20,9 @@ int main() {
     objects->add(std::make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
     objects->add(std::make_shared<sphere>(point3(0.0, 0.0, -1.2), 0.5, material_center));
 
-    camera cam(WIDTH, HEIGHT, FOCAL_LENGTH, objects);
+    camera_params params(WIDTH, HEIGHT);
+    // params.set_size(WIDTH, HEIGHT);
+    camera cam(params, objects);
 
     std::cout << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 
