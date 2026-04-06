@@ -32,7 +32,7 @@ class metal : public material {
 };
 
 class dielectric : public material {
-    double refractive_index;
+    double refractive_index; // note that this is the *ratio* of the object's refractive index to that of the enclosing medium
 
     public:
     dielectric(double refractive_index) : refractive_index(refractive_index) {}

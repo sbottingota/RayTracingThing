@@ -1,5 +1,7 @@
 #include "material.h"
 
+#include <cmath>
+
 bool lambertian::scatter(const ray& ray_in, const hit_record& record, color& attenuation, ray& scattered) const {
     vec3 scatter_direction = record.normal + vec3::random_unit();
     if (scatter_direction.near_zero()) { // catch degenerate scatter direction
@@ -24,9 +26,26 @@ bool dielectric::scatter(const ray& ray_in, const hit_record& record, color& att
     double ri = record.front_face ? (1.0 / refractive_index) : refractive_index;
 
     vec3 unit_direction = ray_in.direction().unit_vector();
-    vec3 refracted = unit_direction.refracted(record.normal, ri);
+    double cos_theta = std::min((-unit_direction).dot(record.normal), 1.0);
+    double sin_theta = std::sqrt(1.0 - cos_theta*cos_theta);
 
-    scattered = ray(record.p, refracted);
+    bool can_refract = ri * sin_theta <= 1.0;
+
+    vec3 direction;
+    if (can_refract) {
+        direction = unit_direction.refracted(record.normal, ri);
+    } else {
+        direction = unit_direction.reflected(record.normal);
+    }
+
+    scattered = ray(record.p, direction);
     return true;
+}
+
+double reflectance(double cosine, double refractive_index) {
+    // using schlick's approximation
+    double r0 = (1 - refractive_index) / (1 + refractive_index);
+    r0 *= r0;
+    return r0 + (1 - r0) * std::pow(1 - cosine, 5);    
 }
 
