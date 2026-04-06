@@ -10,8 +10,8 @@
 
 int main() {
     auto objects = std::make_shared<object_group>();
-    objects->add(std::make_shared<sphere>(point3(0, 0, -1), 0.3));
-    objects->add(std::make_shared<sphere>(point3(-20, 0, -20), 10));
+    objects->add(std::make_shared<sphere>(point3(0, 0, -1), 0.5));
+    objects->add(std::make_shared<sphere>(point3(0, -100.5, -1), 100));
 
     camera cam(WIDTH, HEIGHT, FOCAL_LENGTH, objects);
 

@@ -13,6 +13,7 @@ class camera {
     double focal_length;
 
     int samples_per_pixel = 10;
+    int max_depth = 10;
 
     double viewport_width, viewport_height;
 
@@ -34,7 +35,7 @@ class camera {
     color sampled_pixel_at(int x, int y) const;
 
     private:
-    color ray_color(const ray& r) const;
+    color ray_color(const ray& r, int depth) const;
 };
 
 #endif

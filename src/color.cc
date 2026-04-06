@@ -1,6 +1,6 @@
 #include "color.h"
 
-#include "interval.h"
+#include "util.h"
 
 void write_color(std::ostream& out, const color& pixel_color) {
     double r = pixel_color[0];

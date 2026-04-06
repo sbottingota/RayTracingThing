@@ -1,7 +1,8 @@
-#ifndef INTERVAL_H
-#define INTERVAL_H
+#ifndef UTIL_H
+#define UTIL_H
 
-#include <limits>
+// returns a random double in the range[0, 1)
+double random_double();
 
 class interval {
     public:

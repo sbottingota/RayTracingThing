@@ -1,4 +1,6 @@
-#include "interval.h"
+#include "util.h"
+
+#include <limits>
 
 double interval::size() const {
     return max - min;

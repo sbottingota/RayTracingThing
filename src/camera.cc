@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "interval.h"
+#include "util.h"
 
 constexpr double inf = std::numeric_limits<double>::infinity();
 
@@ -27,10 +27,15 @@ void camera::set_object(std::shared_ptr<screen_object> object) {
     this->object = object;
 }
 
-color camera::ray_color(const ray& r) const {
+color camera::ray_color(const ray& r, int depth) const {
+    if (depth <= 0) {
+        return color(0, 0, 0);
+    }
+
     hit_record record;
-    if (object->hits(r, interval(0, inf), record)) {
-        return 0.5 * (record.normal + color(1, 1, 1));
+    if (object->hits(r, interval(0.01, inf), record)) {
+        vec3 direction = vec3::random_on_hemisphere(record.normal);
+        return 0.5 * ray_color(ray(record.p, direction), depth - 1);
     }
 
     // create a gradient
@@ -44,19 +49,14 @@ color camera::pixel_at(int x, int y) const {
     vec3 ray_direction = pixel_center - camera_center;
     ray r(camera_center, ray_direction);
 
-    return ray_color(r);
-}
-
-// random number beween -0.5 and 0.5
-double random_pixel_offset() {
-    return std::rand() / (RAND_MAX + 1.0) - 0.5;
+    return ray_color(r, max_depth);
 }
 
 color camera::sampled_pixel_at(int x, int y) const {
     color pixel_color(0, 0, 0);
 
     for (int i = 0; i < samples_per_pixel; ++i) {
-        pixel_color += pixel_at(x + random_pixel_offset(), y + random_pixel_offset());
+        pixel_color += pixel_at(x + random_double()-0.5, y + random_double()-0.5);
     }
 
     pixel_color /= samples_per_pixel;

@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-#include "interval.h"
+#include "util.h"
 
 class hit_record {
   public:
