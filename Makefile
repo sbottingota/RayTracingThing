@@ -1,6 +1,6 @@
 .PHONY: all image jpg clean
 
-CXXFLAGS=-Wall -Wextra -Wpedantic
+CXXFLAGS=-Wall -Wextra -Wpedantic -Wno-unused-parameter
 FFMPEG_FLAGS=-hide_banner -loglevel error
 
 SRCS=$(wildcard src/*.cc)

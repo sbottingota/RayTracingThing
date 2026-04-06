@@ -1,4 +1,4 @@
-#include "geometry.h"
+#include "screen_object.h"
 
 void object_group::add(std::shared_ptr<screen_object> object) {
     objects.push_back(object);

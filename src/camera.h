@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "geometry.h"
+#include "screen_object.h"
 #include "ray.h"
 #include "color.h"
 

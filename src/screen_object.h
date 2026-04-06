@@ -1,5 +1,5 @@
-#ifndef GEOMETRY_H
-#define GEOMETRY_H
+#ifndef SCREEN_OBJECT_H
+#define SCREEN_OBJECT_H
 
 #include "ray.h"
 
@@ -8,10 +8,13 @@
 
 #include "util.h"
 
+class material;
+
 class hit_record {
   public:
     point3 p;
     vec3 normal;
+    std::shared_ptr<material> mat;
     double t;
     bool front_face;
 
@@ -42,9 +45,10 @@ class object_group : public screen_object {
 class sphere : public screen_object {
     point3 center;
     double radius;
+    std::shared_ptr<material> mat;
 
     public:
-    sphere(const point3& center, double radius) : center(center), radius(std::max(0.0, radius)) {}
+    sphere(const point3& center, double radius, std::shared_ptr<material> mat) : center(center), radius(std::max(0.0, radius)), mat(mat) {}
     virtual bool hits(const ray& r, interval ray_t, hit_record& record) const override;
 };
 

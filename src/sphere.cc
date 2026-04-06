@@ -1,4 +1,4 @@
-#include "geometry.h"
+#include "screen_object.h"
 
 #include <cmath>
 
@@ -28,6 +28,7 @@ bool sphere::hits(const ray& r, interval ray_t, hit_record& record) const {
     record.p = r.at(record.t);
     vec3 outward_normal = (record.p - center) / radius;
     record.set_face_normal(r, outward_normal);
+    record.mat = mat;
 
     return true;
 }

@@ -32,6 +32,10 @@ class vec3 {
     double length() const;
     double length_squared() const;
 
+    bool near_zero() const;
+
+    vec3 reflected(const vec3& normal) const;
+
     static vec3 random();
     static vec3 random(double min, double max);
     static vec3 random_unit();

@@ -91,6 +91,15 @@ vec3 operator*(double t, const vec3& v) {
     return vec3(t*v[0], t*v[1], t*v[2]);
 }
 
+bool vec3::near_zero() const {
+    static double epsilon = 1e-8;
+    return std::abs(e[0]) < epsilon && std::abs(e[1]) < epsilon && std::abs(e[2]) < epsilon;
+}
+
+vec3 vec3::reflected(const vec3& normal) const {
+    return (*this) - 2 * dot(normal) * normal;
+}
+
 vec3 vec3::random() {
     return vec3(random_double(), random_double(), random_double());
 }

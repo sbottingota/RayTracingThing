@@ -1,0 +1,33 @@
+#ifndef MATERIAL_H
+#define MATERIAL_H
+
+#include "screen_object.h"
+#include "color.h"
+
+class material {
+    public:
+    virtual ~material() = default;
+
+    virtual bool scatter(const ray& ray_in, const hit_record& record, color& attenuation, ray& scattered) const {
+        return false;
+    }
+};
+
+class lambertian: public material {
+    color albedo;
+
+    public:
+    lambertian(const color& albedo) : albedo(albedo) {}
+
+    bool scatter(const ray& ray_in, const hit_record& record, color& attenuation, ray& scattered) const override;
+};
+
+class metal : public material {
+    color albedo;
+
+    public:
+    metal(const color& albedo) : albedo(albedo) {}
+    bool scatter(const ray& ray_in, const hit_record& record, color& attenuation, ray& scattered) const override;
+};
+
+#endif
