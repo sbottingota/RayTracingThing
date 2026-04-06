@@ -24,9 +24,14 @@ class camera_params {
     double vfov; // vertical view angle
 
 
+    camera_params() : camera_params(0, 0) {}
     camera_params(int width, int height);
+
     void set_focus(point3 lookfrom, point3 lookat, vec3 vup);
     void set_size(int width, int height);
+
+    int get_width() const;
+    int get_height() const;
 
     private:
     void set_viewport_size(); // set viewport size, ensuring that width:height = viewport width:viewport height

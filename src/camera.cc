@@ -42,6 +42,15 @@ void camera_params::set_viewport_size() {
     viewport_width = width * viewport_height / height;
 }
 
+int camera_params::get_width() const {
+    return width;
+}
+
+int camera_params::get_height() const {
+    return height;
+}
+
+
 camera::camera(camera_params params, std::shared_ptr<screen_object> object) : params(params), object(object) {
     params.set_viewport_size();
 

@@ -18,6 +18,18 @@ enum class mode {
     camera
 };
 
+
+void trim(std::string& s) {
+    std::regex trim_regex("^\\s+|\\s+$");
+    s = std::regex_replace(s, trim_regex, "");
+}
+
+void error_and_exit(std::string line, int line_no) {
+    std::clog << "Line " << line_no << ": '" << line << "'\n";
+    std::exit(1);
+}
+
+
 class parameter {
     public:
     std::string name;
@@ -41,17 +53,53 @@ class parameter {
             }
         }
     }
+
+    // expected args should contain zero or more of 'd' or 's', representing double or string
+    void check_args(std::string expected_args) const {
+        if (args.size() != expected_args.size()) {
+            std::clog << "'" << name << "' expected" << expected_args << " arguments but got " << args.size() << '\n';
+            error_and_exit(line, line_no);
+
+        } else {
+            for (int i = 0; i < expected_args.size(); ++i) {
+                if (std::holds_alternative<double>(args[i]) && expected_args[i] == 's') {
+                    std::clog << "'" << name << "' expected a string for argument " << i+1 << "but got double: '" << std::get<double>(args[i]) << "'\n";
+                    error_and_exit(line, line_no);
+
+                } else if (std::holds_alternative<std::string>(args[i]) && expected_args[i] == 'd') {
+                    std::clog << "'" << name << "' expected a double for argument " << i+1 << "but got string: '" << std::get<std::string>(args[i]) << "'\n";
+                    error_and_exit(line, line_no);
+                }
+            }
+        }
+    }
+
+    double as_double() const {
+        check_args("d");
+        return std::get<double>(args[0]);
+    }
+
+    std::string as_string() const {
+        check_args("s");
+        return std::get<std::string>(args[0]);
+    }
+
+    vec3 as_vec3() const {
+        vec3 vec;
+        check_args("ddd");
+
+        for (int i = 0; i < 3; ++i) {
+            vec[i] = std::get<double>(args[i]);
+        }
+
+        return vec;
+    }
+
+    point3 as_point3() const {
+        return as_vec3(); // note that vec3 and point3 are the same class under the hood
+    }
 };
 
-void trim(std::string& s) {
-    std::regex trim_regex("^\\s+|\\s+$");
-    s = std::regex_replace(s, trim_regex, "");
-}
-
-void error_and_exit(std::string line, int line_no) {
-    std::clog << "Line " << line_no << ": '" << line << "'\n";
-    std::exit(1);
-}
 
 mode parse_label(parameter& param) {
     if (!param.args.empty()) {
@@ -67,9 +115,41 @@ mode parse_label(parameter& param) {
     }
 }
 
-// TODO: implement
-void evaluate_camera_params(std::vector<parameter>& params, camera& cam) {
+void evaluate_camera_params(std::vector<parameter>& params, camera_params& c_params) {
+    // default values
+    int width = 640;
+    int height = 360;
 
+    point3 lookfrom(0, 0, 0);
+    point3 lookat(0, 0, -1);
+    vec3 vup(0, 1, 0);
+
+    for (auto& param : params) {
+        if (param.name == "image-size") {
+            param.check_args("dd");
+
+            width = std::get<double>(param.args[0]);
+            height = std::get<double>(param.args[1]);
+        } else if (param.name == "look-from") {
+            lookfrom = param.as_point3();
+        } else if (param.name == "look-at") {
+            lookat = param.as_point3();
+        } else if (param.name == "up-direction") {
+            vup = param.as_vec3();
+        } else if (param.name == "vertical-fov") {
+            c_params.vfov = param.as_double();
+        } else if (param.name == "samples-per-pixel") {
+            c_params.samples_per_pixel = param.as_double();
+        } else if (param.name == "max-depth") {
+            c_params.max_depth == param.as_double();
+        } else {
+            std::clog << "Unknown camera parameter name '" << param.name << "'\n";
+            error_and_exit(param.line, param.line_no);
+        }
+    }
+
+    c_params.set_focus(lookfrom, lookat, vup);
+    c_params.set_size(width, height);
 }
 
 void evaluate_sphere_params(std::vector<parameter>& params, object_group& objects) {
@@ -82,34 +162,13 @@ void evaluate_sphere_params(std::vector<parameter>& params, object_group& object
 
     for (auto& param : params) {
         if (param.name == "position") {
-            if (param.args.size() != 3) {
-                std::clog << "'position' expected 3 arguments but got " << param.args.size() << '\n';
-                error_and_exit(param.line, param.line_no);
-            }
-
-            try {
-                for (int i = 0; i < 3; ++i) {
-                    position[i] = std::get<double>(param.args[i]);
-                }
-            } catch (const std::bad_variant_access&) {
-                std::clog << "'position' expected a double but got a string\n";
-                error_and_exit(param.line, param.line_no);
-            }
+            position = param.as_point3();
 
         } else if (param.name == "size") {
-            if (param.args.size() != 1) {
-                std::clog << "'size' expected 1 argument but got " << param.args.size() << '\n';
-                error_and_exit(param.line, param.line_no);
-            }
+            size = param.as_double();
 
-            try {
-                size = std::get<double>(param.args[0]);
-            } catch (const std::bad_variant_access&) {
-                std::clog << "'size' expected a double but got a string\n";
-                error_and_exit(param.line, param.line_no);
-            }
         } else {
-            std::clog << "Unknown parameter name '" << param.name << "'\n";
+            std::clog << "Unknown sphere parameter name '" << param.name << "'\n";
             error_and_exit(param.line, param.line_no);
         }
     }
@@ -118,19 +177,19 @@ void evaluate_sphere_params(std::vector<parameter>& params, object_group& object
     objects.add(s);
 }
 
-void evaluate_by_mode(mode current_mode, std::vector<parameter>& params, camera& cam, object_group& objects) {
+void evaluate_by_mode(mode current_mode, std::vector<parameter>& params, camera_params& c_params, object_group& objects) {
     switch (current_mode) {
         case mode::sphere:
             evaluate_sphere_params(params, objects);
             break;
 
         case mode::camera:
-            evaluate_camera_params(params, cam);
+            evaluate_camera_params(params, c_params);
             break;
     }
 }
 
-void parse_file(std::string filename, camera& cam, object_group& objects) {
+void parse_file(std::string filename, camera_params& c_params, object_group& objects) {
     std::ifstream file(filename);
     std::string line;
 
@@ -149,7 +208,7 @@ void parse_file(std::string filename, camera& cam, object_group& objects) {
 
         if (param.name.back() == ':') { // check for labels
             // evaluate all parameters from the previous label
-            evaluate_by_mode(current_mode, params, cam, objects);
+            evaluate_by_mode(current_mode, params, c_params, objects);
             params.clear();
 
             // evaluate the new label
@@ -161,6 +220,6 @@ void parse_file(std::string filename, camera& cam, object_group& objects) {
     }
 
     // evaluate params from last label
-    evaluate_by_mode(current_mode, params, cam, objects);
+    evaluate_by_mode(current_mode, params, c_params, objects);
 }
 

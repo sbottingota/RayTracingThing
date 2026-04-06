@@ -5,9 +5,6 @@
 #include "material.h"
 #include "parsing.h"
 
-#define WIDTH 640
-#define HEIGHT 360
-
 int main() {
     auto objects = std::make_shared<object_group>();
 
@@ -23,22 +20,25 @@ int main() {
     objects->add(std::make_shared<sphere>(point3(0.0, 0.0, -1.2), 0.5, material_center));
     */
 
-    camera_params params(WIDTH, HEIGHT);
     /*
     params.set_focus(point3(-2, 2, 1), point3(0, 0, -1), vec3(0, 1, 0));
     params.vfov = 20;
     */
 
+    camera_params params;
+    parse_file("shapes.txt", params, *objects);
+
     camera cam(params, objects);
 
-    parse_file("shapes.txt", cam, *objects);
+    int width = params.get_width();
+    int height = params.get_height();
 
-    std::cout << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
+    std::cout << "P3\n" << width << ' ' << height << "\n255\n";
 
-    for (int j = 0; j < HEIGHT; ++j) {
-        std::clog << "\rScanlines: " << j << '/' << WIDTH - 1 << std::flush;
+    for (int j = 0; j < height; ++j) {
+        std::clog << "\rScanlines: " << j << '/' << height - 1 << std::flush;
 
-        for (int i = 0; i < WIDTH; i++) {
+        for (int i = 0; i < width; i++) {
             write_color(std::cout, cam.sampled_pixel_at(i, j));
         }
     }

@@ -1,8 +1,11 @@
-# camera config (currently ignored)
-position 0.0 0.0 0.0
-facing 0.0 0.0 1.0
+# camera config
+image-size 640 360
 
-vup 0 1 0
+look-from -2 2 1
+look-at 0 0 -1
+up-direction 0 1 0
+
+vertical-fov 60
 
 # shape configs
 
