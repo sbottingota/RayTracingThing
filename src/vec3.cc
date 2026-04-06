@@ -100,6 +100,14 @@ vec3 vec3::reflected(const vec3& normal) const {
     return (*this) - 2 * dot(normal) * normal;
 }
 
+vec3 vec3::refracted(const vec3& normal, double eta_i_over_eta_t) const {
+    double cos_theta = std::min((-(*this)).dot(normal), 1.0);
+    vec3 r_out_perp = eta_i_over_eta_t * ((*this) + cos_theta*normal);
+    vec3 r_out_parallel = -std::sqrt(std::abs(1.0 - r_out_perp.length_squared())) * normal;
+
+    return r_out_perp + r_out_parallel;
+}
+
 vec3 vec3::random() {
     return vec3(random_double(), random_double(), random_double());
 }

@@ -35,6 +35,7 @@ class vec3 {
     bool near_zero() const;
 
     vec3 reflected(const vec3& normal) const;
+    vec3 refracted(const vec3& normal, double eta_i_over_eta_t) const;
 
     static vec3 random();
     static vec3 random(double min, double max);

@@ -19,3 +19,14 @@ bool metal::scatter(const ray& ray_in, const hit_record& record, color& attenuat
     return scattered.direction().dot(record.normal) > 0;
 }
 
+bool dielectric::scatter(const ray& ray_in, const hit_record& record, color& attenuation, ray& scattered) const {
+    attenuation = color(1.0, 1.0, 1.0);
+    double ri = record.front_face ? (1.0 / refractive_index) : refractive_index;
+
+    vec3 unit_direction = ray_in.direction().unit_vector();
+    vec3 refracted = unit_direction.refracted(record.normal, ri);
+
+    scattered = ray(record.p, refracted);
+    return true;
+}
+
