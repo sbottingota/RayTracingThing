@@ -13,8 +13,9 @@ bool lambertian::scatter(const ray& ray_in, const hit_record& record, color& att
 
 bool metal::scatter(const ray& ray_in, const hit_record& record, color& attenuation, ray& scattered) const {
     vec3 reflected = ray_in.direction().reflected(record.normal);
+    reflected = reflected.unit_vector() + fuzz * vec3::random_unit();
     scattered = ray(record.p, reflected);
     attenuation = albedo;
-    return true;
+    return scattered.direction().dot(record.normal) > 0;
 }
 

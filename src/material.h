@@ -24,9 +24,10 @@ class lambertian: public material {
 
 class metal : public material {
     color albedo;
+    double fuzz;
 
     public:
-    metal(const color& albedo) : albedo(albedo) {}
+    metal(const color& albedo, double fuzz) : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {}
     bool scatter(const ray& ray_in, const hit_record& record, color& attenuation, ray& scattered) const override;
 };
 
