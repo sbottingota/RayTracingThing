@@ -54,22 +54,28 @@ class parameter {
         }
     }
 
-    // expected args should contain zero or more of 'd' or 's', representing double or string
+    // expected args should contain zero or more of 'd' or 's', representing double or string,
+    // or + at the end to indicate that all following arguments should be ignored (e.g. in variadic parameters)
     void check_args(std::string expected_args) const {
-        if (args.size() != expected_args.size()) {
+        if (expected_args.back() == '+') { // arguments at the end ignored
+            if (args.size() <= expected_args.size() - 1) {
+                std::clog << "'" << name << "' expected more than " << expected_args << " arguments but got " << args.size() << '\n';
+                error_and_exit(line, line_no);
+            }
+        } else if (args.size() != expected_args.size()) { // fixed number of arguments
             std::clog << "'" << name << "' expected" << expected_args << " arguments but got " << args.size() << '\n';
             error_and_exit(line, line_no);
 
-        } else {
-            for (int i = 0; i < expected_args.size(); ++i) {
-                if (std::holds_alternative<double>(args[i]) && expected_args[i] == 's') {
-                    std::clog << "'" << name << "' expected a string for argument " << i+1 << "but got double: '" << std::get<double>(args[i]) << "'\n";
-                    error_and_exit(line, line_no);
+        }
 
-                } else if (std::holds_alternative<std::string>(args[i]) && expected_args[i] == 'd') {
-                    std::clog << "'" << name << "' expected a double for argument " << i+1 << "but got string: '" << std::get<std::string>(args[i]) << "'\n";
-                    error_and_exit(line, line_no);
-                }
+        for (int i = 0; i < expected_args.size(); ++i) {
+            if (std::holds_alternative<double>(args[i]) && expected_args[i] == 's') {
+                std::clog << "'" << name << "' expected a string for argument " << i+1 << "but got double: '" << std::get<double>(args[i]) << "'\n";
+                error_and_exit(line, line_no);
+
+            } else if (std::holds_alternative<std::string>(args[i]) && expected_args[i] == 'd') {
+                std::clog << "'" << name << "' expected a double for argument " << i+1 << "but got string: '" << std::get<std::string>(args[i]) << "'\n";
+                error_and_exit(line, line_no);
             }
         }
     }
@@ -97,6 +103,27 @@ class parameter {
 
     point3 as_point3() const {
         return as_vec3(); // note that vec3 and point3 are the same class under the hood
+    }
+
+    // note that this function doesn't yet call check_args() (should probably change that in the future)
+    color as_color(int start) const {
+        color col;
+
+        for (int i = 0; i < 3; ++i) {
+            double intensity = std::get<double>(args[i + start]);
+            if (intensity < 0 || intensity > 255) {
+                std::cout << "Color intensity must be betwen 0 and 255 (inclusive), but was '" << intensity << "'\n";
+                error_and_exit(line, line_no);
+            }
+
+            col[i] = intensity / 255;
+        }
+
+        return col;
+    }
+
+    color as_color() const {
+        return as_color(0);
     }
 };
 
@@ -158,7 +185,7 @@ void evaluate_sphere_params(std::vector<parameter>& params, object_group& object
 
     // TODO: allow these to be configured
     color col(0.8, 0.8, 0.0);
-    auto mat = std::make_shared<lambertian>(col);
+    std::shared_ptr<material> mat = std::make_shared<lambertian>(color(0.5, 0.5, 0.5));
 
     for (auto& param : params) {
         if (param.name == "position") {
@@ -167,6 +194,27 @@ void evaluate_sphere_params(std::vector<parameter>& params, object_group& object
         } else if (param.name == "size") {
             size = param.as_double();
 
+        } else if (param.name == "material") {
+            param.check_args("s+");
+
+            std::string material_name = std::get<std::string>(param.args[0]);
+            if (material_name == "matt") {
+                param.check_args("sddd");
+
+                color col = param.as_color(1);
+                mat = std::make_shared<lambertian>(col);
+
+            } else if (material_name == "shiny") {
+                param.check_args("sddd");
+
+                color col = param.as_color(1);
+                mat = std::make_shared<metal>(col, 0);
+
+            } else if (material_name == "transparent") {
+                param.check_args("sd");
+                double refractive_index = std::get<double>(param.args[1]);
+                mat = std::make_shared<dielectric>(refractive_index);
+            }
         } else {
             std::clog << "Unknown sphere parameter name '" << param.name << "'\n";
             error_and_exit(param.line, param.line_no);
