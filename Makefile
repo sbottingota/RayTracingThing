@@ -23,6 +23,9 @@ image: all
 jpg: image
 	ffmpeg $(FFMPEG_FLAGS) -i img.ppm img.jpg
 
+png: image
+	ffmpeg $(FFMPEG_FLAGS) -i img.ppm img.png
+
 clean:
 	@rm -f build/* *.ppm *.png *.jpg
 

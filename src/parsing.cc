@@ -180,11 +180,9 @@ void evaluate_camera_params(std::vector<parameter>& params, camera_params& c_par
 }
 
 void evaluate_sphere_params(std::vector<parameter>& params, object_group& objects) {
-    point3 position;
-    double size;
+    point3 position(0, 0, 0);
+    double size = 0;
 
-    // TODO: allow these to be configured
-    color col(0.8, 0.8, 0.0);
     std::shared_ptr<material> mat = std::make_shared<lambertian>(color(0.5, 0.5, 0.5));
 
     for (auto& param : params) {
