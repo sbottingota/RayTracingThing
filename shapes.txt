@@ -5,6 +5,8 @@ look-from 0 0.25 0
 look-at 0 0 -1
 up-direction 0 1 0
 
+# samples-per-pixel 50
+
 vertical-fov 90
 
 # shape configs

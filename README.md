@@ -20,7 +20,7 @@ Put stuff in `shapes.txt` to have it show up in the render.
 | `look-at <x> <y> <z>` | Set the focal point. | (0, 0, -1) |
 | `up-direction` | The direction that the camera treats as "up" in its image. | (0, 1, 0) |
 | `vertical-fov` | The vertical FOV of the camera (in degrees). | 90° |
-| `samples-per-pixel` | The number of random samples the camera will take per pixel for antialiasing. | 10 |
+| `samples-per-pixel` | The number of random samples the camera will take per pixel for antialiasing. (This will increase the image quality but also the rendering time.) | 10 |
 | `max-depth` | Maximum times a ray will bounce off objects. | 10 |
 
 #### Shapes
@@ -31,7 +31,7 @@ Note that the only shape currently available is a sphere.
 | `size <radius>` | The radius of the sphere. | 0 (i.e. the sphere will be too small to render) |
 | `material <type> ...` | Set the material of the sphere: <ul> <li>`matt <r> <g> <b>`</li> <li>`shiny <r> <g> <b>`</li> <li>`transparent <refractive index>`</li> </ul>| matt 128 128 128 |
 
-#### Example
+### Example
 ```
 # camera config
 image-size 640 360
