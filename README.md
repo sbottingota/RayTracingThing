@@ -28,41 +28,9 @@ Note that the only shape currently available is a sphere.
 | Parameter | Function | Default|
 | --- | --- | --- |
 | `position <x> <y> <z>` | The center of the sphere. | (0, 0, 0) |
+| `moving-to <x> <y> <z>` | Use this to add motion  blurs: the sphere will appear to be moving from its original position to this new position. | Same as `position` (i.e. no motion blur) |
 | `size <radius>` | The radius of the sphere. | 0 (i.e. the sphere will be too small to render) |
 | `material <type> ...` | Set the material of the sphere: <ul> <li>`matt <r> <g> <b>`</li> <li>`shiny <r> <g> <b>`</li> <li>`transparent <refractive index>`</li> </ul>| matt 128 128 128 |
 
 ### Example
-```
-# camera config
-image-size 640 360
-
-look-from 0 0.25 0
-look-at 0 0 -1
-up-direction 0 1 0
-
-vertical-fov 90
-
-# shape configs
-
-# ground
-sphere:
-    position 0 -100.5 -1.0
-    size 100
-    material matt 200 200 0
-
-# other shapes
-sphere:
-    position -1 0 -1
-    size .5
-    material transparent 1.5
-
-sphere:
-    position 1 0 -1
-    size .5
-    material shiny 200 150 50
-
-sphere:
-    position 0 0 -1.2
-    size 0.5
-    material matt 25 50 125
-```
+Check `shapes.txt` for an example.

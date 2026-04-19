@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <string>
+#include <optional>
 
 #include <cstdlib>
 
@@ -50,14 +51,18 @@ void evaluate_camera_params(std::vector<parameter>& params, camera_params& c_par
 }
 
 void evaluate_sphere_params(std::vector<parameter>& params, object_group& objects) {
-    point3 position(0, 0, 0);
+    point3 start_pos(0, 0, 0);
+    std::optional<point3> end_pos;
     double size = 0;
 
     std::shared_ptr<material> mat = std::make_shared<lambertian>(color(0.5, 0.5, 0.5));
 
     for (auto& param : params) {
         if (param.name == "position") {
-            position = param.as_point3();
+            start_pos = param.as_point3();
+
+        } else if (param.name == "moving-to") {
+            end_pos = param.as_point3();
 
         } else if (param.name == "size") {
             size = param.as_double();
@@ -89,7 +94,8 @@ void evaluate_sphere_params(std::vector<parameter>& params, object_group& object
         }
     }
 
-    auto s = std::make_shared<sphere>(position, size, mat);
+    // if there is no end position, set the start and end positions to be the same (i.e. the sphere is stationary)
+    auto s = std::make_shared<sphere>(start_pos, end_pos.value_or(start_pos), size, mat);
     objects.add(s);
 }
 
