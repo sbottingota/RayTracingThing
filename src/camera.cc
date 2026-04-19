@@ -94,7 +94,9 @@ color camera::ray_color(const ray& r, int depth) const {
 color camera::pixel_at(int x, int y) const {
     point3 pixel_center = pixel00_loc + x*pixel_delta_u + y*pixel_delta_v;
     vec3 ray_direction = pixel_center - params.center;
-    ray r(params.center, ray_direction);
+    double ray_time = random_double();
+
+    ray r(params.center, ray_direction, ray_time);
 
     return ray_color(r, params.max_depth);
 }

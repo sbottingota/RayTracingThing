@@ -38,7 +38,7 @@ void evaluate_camera_params(std::vector<parameter>& params, camera_params& c_par
         } else if (param.name == "samples-per-pixel") {
             c_params.samples_per_pixel = param.as_double();
         } else if (param.name == "max-depth") {
-            c_params.max_depth == param.as_double();
+            c_params.max_depth = param.as_double();
         } else {
             std::clog << "Unknown camera parameter name '" << param.name << "'\n";
             error_and_exit(param.line, param.line_no);

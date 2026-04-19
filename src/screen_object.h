@@ -43,12 +43,18 @@ class object_group : public screen_object {
 };
 
 class sphere : public screen_object {
-    point3 center;
+    ray center;
     double radius;
     std::shared_ptr<material> mat;
 
     public:
-    sphere(const point3& center, double radius, std::shared_ptr<material> mat) : center(center), radius(std::max(0.0, radius)), mat(mat) {}
+    // stationary sphere
+    sphere(const point3& center, double radius, std::shared_ptr<material> mat)
+        : center(center, vec3(0, 0, 0)), radius(std::max(0.0, radius)), mat(mat) {}
+    // moving sphere
+    sphere(const point3& start_center, const point3& end_center, double radius, std::shared_ptr<material> mat)
+        : center(start_center, end_center - start_center), radius(std::max(0.0, radius)), mat(mat) {}
+
     virtual bool hits(const ray& r, interval ray_t, hit_record& record) const override;
 };
 

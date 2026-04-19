@@ -3,7 +3,8 @@
 #include <cmath>
 
 bool sphere::hits(const ray& r, interval ray_t, hit_record& record) const {
-    vec3 oc = center - r.origin();
+    point3 current_center = center.at(r.time());
+    vec3 oc = current_center - r.origin();
     auto a = r.direction().length_squared();
     auto h = r.direction().dot(oc);
     auto c = oc.length_squared() - radius*radius;
@@ -26,7 +27,7 @@ bool sphere::hits(const ray& r, interval ray_t, hit_record& record) const {
 
     record.t = root;
     record.p = r.at(record.t);
-    vec3 outward_normal = (record.p - center) / radius;
+    vec3 outward_normal = (record.p - current_center) / radius;
     record.set_face_normal(r, outward_normal);
     record.mat = mat;
 
